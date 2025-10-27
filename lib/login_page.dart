@@ -1,5 +1,8 @@
-import 'package:VAWC_Report_App/report_page.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'report_page.dart';
 import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,19 +16,56 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
 
-  final String Usernamee = "victim";
-  final String Passwordd = "1234";
+  bool isLoading = false;
 
-  void login() {
-    if (username.text == Usernamee && password.text == Passwordd) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const ReportIncidentPage()),
-      );
-    } else {
+  void login() async {
+    if (username.text.isEmpty || password.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid username or password")),
+        const SnackBar(content: Text("Please enter username and password")),
       );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      final url = Uri.parse('http://192.168.100.17/vawc_php/login.php');
+
+      final response = await http.post(
+        url,
+        body: {'username': username.text, 'password': password.text},
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (data['success']) {
+        final user = data['user'];
+        final int userId = int.parse(user['user_id'].toString());
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ReportIncidentPage(currentUserId: userId),
+          ),
+        );
+
+        // <-- extract the user info
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Login successful!")));
+        // Navigate to next page
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['message'] ?? "Login failed")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error connecting to server: $e")));
+    } finally {
+      setState(() => isLoading = false);
     }
   }
 
