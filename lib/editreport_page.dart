@@ -160,7 +160,7 @@ class _EditReportPageState extends State<EditReportPage> {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
         controller: controller,
-        enabled: isEditable, // 👈 disables editing if not allowed
+        enabled: isEditable,
         maxLines: maxLines,
         decoration: InputDecoration(
           labelText: label,

@@ -62,74 +62,81 @@ class _NotificationPageState extends State<NotificationPage> {
         title: const Text("Message"),
         backgroundColor: Colors.blueAccent,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : reports.isEmpty
-          ? const Center(child: Text("No message available"))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: reports.length,
-              itemBuilder: (context, index) {
-                final report = reports[index];
-                final caseNumber = report["case_number"] ?? "N/A";
-                final status = report["status"] ?? "Pending Review";
-                final worker = report["worker"] ?? "Not assigned";
-                final schedule = report["schedule"] ?? "TBA";
-                final message = report["message"] ?? "No new message";
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 248, 248, 248),
+              Color.fromARGB(255, 13, 98, 196),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
 
-                final timestamp = report["timestamp"] != null
-                    ? DateTime.tryParse(report["timestamp"]) ?? DateTime.now()
-                    : DateTime.now();
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : reports.isEmpty
+            ? const Center(child: Text("No message available"))
+            : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: reports.length,
+                itemBuilder: (context, index) {
+                  final report = reports[index];
+                  final caseNumber = report["case_number"] ?? "N/A";
+                  final status = report["status"] ?? "Pending Review";
+                  final worker = report["worker"] ?? "Not assigned";
+                  final schedule = report["schedule"] ?? "TBA";
+                  final message = report["message"] ?? "No new message";
 
-                final formattedTimestamp = DateFormat(
-                  'MMMM d, y – h:mm a',
-                ).format(timestamp);
+                  final updated_at = report["updated_at"] ?? "N/A";
 
-                return Card(
-                  elevation: 4,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Case No: $caseNumber",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text("Status: $status"),
-                        Text("Worker: $worker"),
-                        Text("Schedule: $schedule"),
-                        const Divider(),
-                        Text(
-                          "Admin Message:",
-                          style: TextStyle(
-                            color: Colors.blue[700],
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(message),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Updated: $formattedTimestamp",
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+                  return Card(
+                    elevation: 4,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                );
-              },
-            ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Case No: $caseNumber",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text("Status: $status"),
+                          Text("Worker: $worker"),
+                          Text("Schedule: $schedule"),
+                          const Divider(),
+                          Text(
+                            "Admin Message:",
+                            style: TextStyle(
+                              color: Colors.blue[700],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(message),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Updated: $updated_at",
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+      ),
     );
   }
 }
